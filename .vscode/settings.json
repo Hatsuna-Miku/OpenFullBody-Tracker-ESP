@@ -1,6 +1,8 @@
 {
     "files.associations": {
+        "*.hpp": "cpp",
         "cmath": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "limits": "cpp"
     }
 }

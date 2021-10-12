@@ -1,5 +1,5 @@
 /*
-    SlimeVR Code is placed under the MIT license
+    OpenFullBody Code is placed under the MIT license
     Copyright (c) 2021 Eiren Rain
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -55,7 +55,7 @@ void setUpWiFi() {
     Serial.println("[NOTICE] WiFi: Setting up WiFi");
     WiFi.persistent(true);
     WiFi.mode(WIFI_STA);
-    WiFi.hostname("SlimeVR FBT Tracker");
+    WiFi.hostname("OpenFullBody FBT Tracker");
     Serial.printf("[NOTICE] WiFi: Loaded credentials for SSID %s and pass length %d\n", WiFi.SSID().c_str(), WiFi.psk().length());
     wl_status_t status = WiFi.begin(); // Should connect to last used access point, see https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/station-class.html#begin
     Serial.printf("[NOTICE] Status: %d", status);

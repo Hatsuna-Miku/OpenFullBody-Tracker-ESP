@@ -1,5 +1,5 @@
 /*
-    SlimeVR Code is placed under the MIT license
+    OpenFullBody Code is placed under the MIT license
     Copyright (c) 2021 Eiren Rain
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -64,7 +64,7 @@ void otaSetup(const char * const otaPassword) {
 
 void otaUpdate() {
     if(enabled) {
-        if(bootTime + 60000 < millis()) {
+        if(bootTime + 600000 < millis()) {
             // Disable OTA 60 seconds after boot as protection measure
             enabled = false;
             Serial.println("[NOTICE] OTA disabled by timeout, it is not an error");

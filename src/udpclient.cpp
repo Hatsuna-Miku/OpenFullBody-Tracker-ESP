@@ -1,5 +1,5 @@
 /*
-    SlimeVR Code is placed under the MIT license
+    OpenFullBody Code is placed under the MIT license
     Copyright (c) 2021 Eiren Rain
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -634,7 +634,7 @@ void connectClient()
             case PACKET_HANDSHAKE:
                 // Assume handshake sucessful, don't check it
                 // But proper handshake should contain "Hey OVR =D 5" ASCII string right after the packet number
-                // Starting on 14th byte (packet number, 12 bytes greetings, null-terminator) we can transfer SlimeVR handshake data
+                // Starting on 14th byte (packet number, 12 bytes greetings, null-terminator) we can transfer OpenFullBody handshake data
                 host = Udp.remoteIP();
                 port = Udp.remotePort();
                 lastPacketMs = now;

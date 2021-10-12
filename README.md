@@ -1,4 +1,4 @@
-OpenFullBody 的第一个版本Fork自SlimeVR项目。
+OpenFullBody 的第一个版本Fork自OpenFullBody项目。
 # 为ESP系列MCU定制的的易追追踪器固件
 # OpenFullBody Tracker firmware for ESP
 

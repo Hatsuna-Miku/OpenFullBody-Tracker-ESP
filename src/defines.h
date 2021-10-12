@@ -1,5 +1,5 @@
 /*
-    SlimeVR Code is placed under the MIT license
+    OpenFullBody Code is placed under the MIT license
     Copyright (c) 2021 Eiren Rain
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,8 +24,8 @@
 #include "debug.h"
 
 // Set parameters of IMU and board used
-#define IMU IMU_BNO085
-#define BOARD BOARD_SLIMEVR
+#define IMU IMU_MPU6050
+#define BOARD BOARD_NODEMCU
 #define IMU_ROTATION -PI / 2.0
 #define SECOND_IMU_ROTATION PI / 2.0
 
@@ -62,7 +62,7 @@
   #define IMU_HAS_GYRO true
   #define IMU_HAS_MAG false
   #define I2C_SPEED 100000
-  #define IMU_MPU6050_RUNTIME_CALIBRATION // Comment to revert to startup/traditional-calibration
+  //#define IMU_MPU6050_RUNTIME_CALIBRATION // Comment to revert to startup/traditional-calibration
   // If you want to use dual MPU6050's, change I2C_SPEED to 400000 and uncomment the next line
   // #define HAS_SECOND_IMU true
 #elif IMU == IMU_MPU6500
@@ -89,9 +89,9 @@
     #define BNO_ADDR_2 0x4B
   #endif
 #elif BOARD == BOARD_NODEMCU
-  #define PIN_IMU_SDA D2
-  #define PIN_IMU_SCL D1
-  #define PIN_IMU_INT D5
+  #define PIN_IMU_SDA D1
+  #define PIN_IMU_SCL D2
+  #define PIN_IMU_INT D8
   #define PIN_IMU_INT_2 D6
   #define BNO_ADDR_1 0x4A
   #define BNO_ADDR_2 0x4B
@@ -121,6 +121,6 @@
   // Wemos D1 Mini with Wemos BatteryShiled v1.2.0 or higher: BatteryShield with J2 closed, has an addtional 130K resistor. So the resulting Voltage Divider is R1=220K+100K=320K and R2=100K > this means, 4.5V analogRead input voltage results in 1023.0
   #define batteryADCMultiplier 1.0 / 1023.0 * 4.5
 #else
-  // SlimeVR Board can handle max 5V > so analogRead of 5.0V input will result in 1023.0
+  // OpenFullBody Board can handle max 5V > so analogRead of 5.0V input will result in 1023.0
   #define batteryADCMultiplier 1.0 / 1023.0 * 5.0
 #endif
