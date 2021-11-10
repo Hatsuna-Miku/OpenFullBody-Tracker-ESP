@@ -32,6 +32,9 @@
 #include <i2cscan.h>
 #include "serialcommands.h"
 #include "ledstatus.h"
+#include "EEPROM.h"
+
+int stat;
 
 #if IMU == IMU_BNO080 || IMU == IMU_BNO085
     BNO080Sensor sensor{};
@@ -48,6 +51,8 @@
     #if defined(HAS_SECOND_IMU)
         MPU6050Sensor sensor2{};
     #endif
+#elif IMU == IMU_BMI160
+    BMI160Sensor sensor{};
 #else
     #error Unsupported IMU
 #endif
@@ -79,15 +84,37 @@ void commandRecieved(int command, void * const commandData, int commandDataLengt
     }
 }
 
+float vol2per(float);
+
 void setup()
 {
     //wifi_set_sleep_type(NONE_SLEEP_T);
     // Glow diode while loading
+    #ifdef STARTUPRESET
+    void(* resetFunc) (void) = 0;
+    EEPROM.begin(4);
+    stat=EEPROM.read(0);
+    Serial.printf("Status:%d/n",stat);
+    EEPROM.write(0,stat+1);
+    EEPROM.commit();
+    if(stat%2==0)
+    {
+        Serial.printf("Restarting...");
+        resetFunc();
+    }
+    #endif
+
     pinMode(LOADING_LED, OUTPUT);
     pinMode(CALIBRATING_LED, OUTPUT);
+    #ifdef ONE_BUTTON_STARTUP
+        pinMode(13,OUTPUT);
+        pinMode(12,INPUT);
+        digitalWrite(13,HIGH);
+        while(digitalRead(12)==0);
+    #endif
     digitalWrite(CALIBRATING_LED, HIGH);
     digitalWrite(LOADING_LED, LOW);
-    
+    delay(10);
     Serial.begin(serialBaudRate);
     setUpSerialCommands();
 #if IMU == IMU_MPU6500 || IMU == IMU_MPU6050 || IMU == IMU_MPU9250
@@ -123,6 +150,9 @@ void setup()
     sensor.setupBNO080(0, I2CSCAN::pickDevice(BNO_ADDR_1, BNO_ADDR_2, true), PIN_IMU_INT);
     #endif
 #endif
+#if IMU == IMU_BMI160
+    sensor.setupBMI160(0, I2CSCAN::pickDevice(BMI_ADDR, BMI_ADDR, true), PIN_IMU_INT);
+#endif
 #if IMU == IMU_MPU6050 && HAS_SECOND_IMU
     if (I2CSCAN::isI2CExist(0x68) && I2CSCAN::isI2CExist(0x69)) {
         sensor2.setSecond();
@@ -147,6 +177,24 @@ void setup()
 
 void loop()
 {
+    #ifdef ONE_BUTTON_STARTUP
+    if(digitalRead(12)==0)
+    {
+        digitalWrite(2,LOW);
+        delay(200);
+        digitalWrite(2,HIGH);
+        delay(200);
+        digitalWrite(2,LOW);
+        delay(200);
+        digitalWrite(2,HIGH);
+        delay(200);
+        digitalWrite(2,LOW);
+        delay(200);
+        digitalWrite(2,HIGH);
+        delay(200);
+        digitalWrite(13,LOW);
+    }
+    #endif
     ledStatusUpdate();
     serialCommandsUpdate();
     wifiUpkeep();
@@ -184,7 +232,61 @@ void loop()
     if(now_ms - last_battery_sample >= batterySampleRate) {
         last_battery_sample = now_ms;
         float battery = ((float) analogRead(PIN_BATTERY_LEVEL)) * batteryADCMultiplier;
+        battery = vol2per(battery);
         sendFloat(battery, PACKET_BATTERY_LEVEL);
     }
 #endif
+}
+
+float vol2per(float vol)
+{
+    if(vol>=4.2)
+    {
+        return 100.0;
+    }
+    else if(vol<4.2 && vol>=4.06)
+    {
+        return 90.0+((vol-4.06)/(4.2-4.06)*10.0);
+    }
+    else if(vol<4.06 && vol>=3.98)
+    {
+        return 80.0+((vol-3.98)/(4.06-3.98)*10.0);
+    }
+    else if(vol<3.98 && vol>=3.92)
+    {
+        return 70.0+((vol-3.92)/(-3.92)*10.0);
+    }
+    else if(vol<3.92 && vol>=3.87)
+    {
+        return 60.0+((vol-3.87)/(-3.87)*10.0);
+    }
+    else if(vol<3.87 && vol>=3.82)
+    {
+        return 50.0+((vol-3.82)/(-3.82)*10.0);
+    }
+    else if(vol<3.82 && vol>=3.79)
+    {
+        return 40.0+((vol-3.79)/(-3.79)*10.0);
+    }
+    else if(vol<3.79 && vol>=3.77)
+    {
+        return 30.0+((vol-3.77)/(-3.77)*10.0);
+    }
+    else if(vol<3.77 && vol>=3.74)
+    {
+        return 20.0+((vol-3.74)/(-3.74)*10.0);
+    }
+    else if(vol<3.74 && vol>=3.68)
+    {
+        return 10.0+((vol-3.68)/(-3.68)*10.0);
+    }
+    else if(vol<3.68 && vol>=3.45)
+    {
+        return 5.0+((vol-3.45)/(-3.45)*5.0);
+    }
+    else if(vol<3.45 && vol>=3.10)
+    {
+        return 0.0+((vol-3.10)/(-3.10)*5.0);
+    }
+    return -1;
 }

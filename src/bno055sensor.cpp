@@ -25,6 +25,7 @@
 #include <I2Cdev.h>
 #include "udpclient.h"
 #include "defines.h"
+#if IMU == IMU_BNO055
 
 namespace {
     void signalAssert() {
@@ -82,3 +83,4 @@ void BNO055Sensor::sendData() {
 void BNO055Sensor::startCalibration(int calibrationType) {
 
 }
+#endif

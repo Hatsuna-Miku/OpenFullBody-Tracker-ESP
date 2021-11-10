@@ -28,6 +28,7 @@
 #define IMU_BNO086 4
 #define IMU_BNO055 5
 #define IMU_MPU6050 6
+#define IMU_BMI160 7
 
 #define BOARD_SLIMEVR 1
 #define BOARD_SLIMEVR_DEV 2
@@ -35,6 +36,7 @@
 #define BOARD_CUSTOM 4
 #define BOARD_WROOM32 5
 #define BOARD_WEMOSD1MINI 6
+#define BOARD_EASYTRACKER 7
 
 #ifndef LED_BUILTIN
 #define LED_BUILTIN 2

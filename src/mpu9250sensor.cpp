@@ -1,3 +1,4 @@
+
 /*
     OpenFullBody Code is placed under the MIT license
     Copyright (c) 2021 Eiren Rain, S.J. Remington
@@ -28,6 +29,7 @@
 #include "helper_3dmath.h"
 #include <i2cscan.h>
 #include "calibration.h"
+#if IMU == IMU_MPU9250
 
 #define gscale (250. / 32768.0) * (PI / 180.0) //gyro default 250 LSB per d/s -> rad/s
 // These are the free parameters in the Mahony filter and fusion scheme,
@@ -288,3 +290,4 @@ void MPU9250Sensor::startCalibration(int calibrationType) {
     digitalWrite(CALIBRATING_LED, HIGH);
     sendCalibrationFinished(CALIBRATION_TYPE_EXTERNAL_ALL, 0, PACKET_RAW_CALIBRATION_DATA);
 }
+#endif

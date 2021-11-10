@@ -1,3 +1,4 @@
+
 /*
     OpenFullBody Code is placed under the MIT license
     Copyright (c) 2021 Eiren Rain
@@ -32,7 +33,7 @@
 #include <i2cscan.h>
 #include "calibration.h"
 #include "configuration.h"
-
+#if IMU == IMU_MPU6050
 namespace {
     void signalAssert() {
         for(int i = 0; i < 200; ++i) {
@@ -143,6 +144,14 @@ void MPU6050Sensor::motionLoop() {
         q[3] = rawQuat.w;
         quaternion.set(-q[1], q[0], q[2], q[3]);
         quaternion *= sensorOffset;
+        /*
+        Vector3 probe = quaternion.get_euler_xyz();
+        for(int i=0;i<3;i++)
+        {
+            Serial.print(probe[i]);Serial.print(" ");
+        }
+        Serial.println();
+        */
         hasNewData = true;
     }
 }
@@ -207,3 +216,4 @@ void MPU6050Sensor::startCalibration(int calibrationType) {
 
 #endif // !IMU_MPU6050_RUNTIME_CALIBRATION
 }
+#endif

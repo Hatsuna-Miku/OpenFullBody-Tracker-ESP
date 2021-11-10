@@ -1,3 +1,4 @@
+
 /*
     OpenFullBody Code is placed under the MIT license
     Copyright (c) 2021 Eiren Rain
@@ -27,6 +28,7 @@
 #include "defines.h"
 #include <i2cscan.h>
 #include "ledstatus.h"
+#if IMU == IMU_BNO080 || IMU == IMU_BNO085
 
 namespace {
     void signalAssert() {
@@ -197,3 +199,4 @@ void BNO080Sensor::startCalibration(int calibrationType) {
     } while(!imu.calibrationComplete());
     imu.saveCalibration();
 }
+#endif

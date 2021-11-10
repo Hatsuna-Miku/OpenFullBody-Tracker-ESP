@@ -61,12 +61,19 @@
   #define IMU_HAS_ACCELL true
   #define IMU_HAS_GYRO true
   #define IMU_HAS_MAG false
-  #define I2C_SPEED 100000
-  //#define IMU_MPU6050_RUNTIME_CALIBRATION // Comment to revert to startup/traditional-calibration
+  #define I2C_SPEED 400000
+  #define IMU_MPU6050_RUNTIME_CALIBRATION // Comment to revert to startup/traditional-calibration
   // If you want to use dual MPU6050's, change I2C_SPEED to 400000 and uncomment the next line
   // #define HAS_SECOND_IMU true
+  #define STARTUPRESET
 #elif IMU == IMU_MPU6500
   #define IMU_NAME "MPU6500"
+  #define IMU_HAS_ACCELL true
+  #define IMU_HAS_GYRO true
+  #define IMU_HAS_MAG false
+  #define I2C_SPEED 100000
+#elif IMU == IMU_BMI160
+  #define IMU_NAME "BMI160"
   #define IMU_HAS_ACCELL true
   #define IMU_HAS_GYRO true
   #define IMU_HAS_MAG false
@@ -89,12 +96,23 @@
     #define BNO_ADDR_2 0x4B
   #endif
 #elif BOARD == BOARD_NODEMCU
-  #define PIN_IMU_SDA D1
-  #define PIN_IMU_SCL D2
+  #define PIN_IMU_SDA D2
+  #define PIN_IMU_SCL D1
   #define PIN_IMU_INT D8
   #define PIN_IMU_INT_2 D6
+  #define BMI_ADDR 0x69
   #define BNO_ADDR_1 0x4A
   #define BNO_ADDR_2 0x4B
+#elif BOARD == BOARD_EASYTRACKER
+  #define PIN_IMU_SDA 4
+  #define PIN_IMU_SCL 5
+  #define PIN_IMU_INT 15
+  //#define PIN_IMU_INT_2 D6
+  #define PIN_BATTERY_LEVEL A0
+  #define BMI_ADDR 0x69
+  #define BNO_ADDR_1 0x4A
+  #define BNO_ADDR_2 0x4B
+  #define ONE_BUTTON_STARTUP
 #elif BOARD == BOARD_CUSTOM
   // Define pins by the examples above
 #elif BOARD == BOARD_WROOM32
@@ -107,7 +125,7 @@
   #define BNO_ADDR_2 0x4B
 #elif BOARD == BOARD_WEMOSD1MINI
   #define PIN_IMU_SDA D2
-  #define PIN_IMU_SCL D1
+  #define PIN_IMU_SCL D3
   #define PIN_BATTERY_LEVEL A0
   #define WEMOS_BATTERY_SHIELD_130K true
 #endif
@@ -120,6 +138,8 @@
   // Wemos D1 Mini has an internal Voltage Divider with R1=220K and R2=100K > this means, 3.3V analogRead input voltage results in 1023.0
   // Wemos D1 Mini with Wemos BatteryShiled v1.2.0 or higher: BatteryShield with J2 closed, has an addtional 130K resistor. So the resulting Voltage Divider is R1=220K+100K=320K and R2=100K > this means, 4.5V analogRead input voltage results in 1023.0
   #define batteryADCMultiplier 1.0 / 1023.0 * 4.5
+#elif BOARD == BOARD_EASYTRACKER
+  #define batteryADCMultiplier 1.0 / 1023.0 * 5.02
 #else
   // OpenFullBody Board can handle max 5V > so analogRead of 5.0V input will result in 1023.0
   #define batteryADCMultiplier 1.0 / 1023.0 * 5.0

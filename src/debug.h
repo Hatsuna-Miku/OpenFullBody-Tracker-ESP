@@ -23,6 +23,7 @@
 #define IMU_MPU6050_RUNTIME_CALIBRATION // Comment to revert to startup/traditional-calibration
 
 //Debug information
+//#define DEBUG
 //#define FULL_DEBUG
 #define serialDebug false // Set to true to get Serial output for debugging
 #define serialBaudRate 115200

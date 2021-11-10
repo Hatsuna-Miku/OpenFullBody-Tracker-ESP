@@ -24,14 +24,27 @@
 #ifndef _SENSOR_H_
 #define _SENSOR_H_ 1
 
-#include <BNO080.h>
-#include <MPU9250.h>
-#include <MPU6050.h>
 #include <quat.h>
 #include <vector3.h>
 #include "configuration.h"
-#include <Adafruit_BNO055.h>
 #include "defines.h"
+#include "helper_3dmath.h"
+
+#if IMU == IMU_BNO080
+    #include <BNO080.h>
+#elif IMU == IMU_BNO085
+    #include <BNO080.h>
+#elif IMU == IMU_MPU9250
+    #include <MPU9250.h>
+#elif IMU == IMU_MPU6050
+    #include <MPU6050.h>
+#elif IMU == IMU_BNO055
+    #include <Adafruit_BNO055.h>
+#else IMU == IMU_BMI160
+    #include "BMI160.h"
+#endif
+
+
 
 #define DATA_TYPE_NORMAL 1
 #define DATA_TYPE_CORRECTION 2
@@ -64,6 +77,7 @@ class EmptySensor : public Sensor {
         void startCalibration(int calibrationType) override final;
 };
 
+#if IMU == IMU_BNO080
 class BNO080Sensor : public Sensor {
     public:
         BNO080Sensor() = default;
@@ -91,6 +105,7 @@ class BNO080Sensor : public Sensor {
         bool useMagentometerCorrection {false};
 };
 
+#elif IMU == IMU_BNO055
 class BNO055Sensor : public Sensor {
     public:
         BNO055Sensor() = default;
@@ -104,6 +119,7 @@ class BNO055Sensor : public Sensor {
         bool newData {false};
 };
 
+#elif IMU == IMU_MPU6050 || IMU == IMU_MPU9250
 class MPUSensor : public Sensor {
     public:
         MPUSensor() = default;
@@ -111,7 +127,7 @@ class MPUSensor : public Sensor {
     protected:
         float q[4] {1.0, 0.0, 0.0, 0.0};
 };
-
+    #if IMU == IMU_MPU6050
 class MPU6050Sensor : public MPUSensor {
     public:
         MPU6050Sensor() = default;
@@ -134,7 +150,7 @@ class MPU6050Sensor : public MPUSensor {
         uint16_t fifoCount;     // count of all bytes currently in FIFO
         uint8_t fifoBuffer[64] {}; // FIFO storage buffer
 };
-
+    #else IMU == IMU_MPU9250
 class MPU9250Sensor : public MPUSensor {
     public:
         MPU9250Sensor() = default;
@@ -159,5 +175,52 @@ class MPU9250Sensor : public MPUSensor {
         unsigned long now = 0, last = 0;   //micros() timers
         float deltat = 0;                  //loop time in seconds
 };
+    #endif
+#elif IMU == IMU_BMI160
+class BMISensor : public Sensor {
+    public:
+        BMISensor() = default;
+        ~BMISensor() override = default;
+    protected:
+        union rawdata
+        {
+            struct separated
+            {
+                int16_t Accel[3],Gyro[3];
+            };
+            int16_t AccelGyro[6];
+        }raw;
+        union data
+        {
+            struct
+            {
+                float Accel[3],Gyro[3];
+            };
+            float AccelGyro[6];
+        }AG;
+        int16_t rawpose[3];
+        Vector3 pose;
+        float calibrationdata[3]; 
+};
 
+class BMI160Sensor : public BMISensor {
+    public:
+        BMI160Sensor() = default;
+        ~BMI160Sensor() override = default;
+        void motionSetup() override final;
+        void motionLoop() override final;
+        void sendData() override final;
+        void startCalibration(int calibrationType) override final;
+        void setupBMI160(uint8_t sensorId = 0, uint8_t addr = 0x4B, uint8_t intPin = 255);
+    private:
+        BMI160 imu;
+        bool newData {false};
+        unsigned long lastData = 0;
+        uint8_t lastReset = 0;
+        uint8_t addr = 0x69;
+        uint8_t intPin = 255;
+        bool setUp {false};
+        
+};
+#endif
 #endif /* _SENSOR_H_ */
